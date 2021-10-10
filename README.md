@@ -1,2 +1,2 @@
 # career_center
-Web Service to save and query resumes
+A simple Web Service to save and query resumes information of candidates.
