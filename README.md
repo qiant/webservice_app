@@ -84,7 +84,7 @@ Note: the Postgresql docker is required to start the service. The web service, c
 
 ## 6. The source code and configure files of the web service app are included in github repo and fastapi_resume_service_app.tar.gz file.
 ```   
-── sql_app
+── webservice_app
     ├── __init__.py
     ├── crud.py
     ├── database.py
