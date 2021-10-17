@@ -26,16 +26,25 @@ def upload_resume_details(resume: schemas.ResumeCreate, db: Session = Depends(ge
     current job description, current job company. Candidate name is in 
     <first name> space <last name> format. e.g. John<space>Doe
     The API Returns the generated resume ID in the response."""
+    
     if resume.id != 0:
         db_resume = crud.get_resume_by_id(db, id = resume.id)
         if db_resume is not None and db_resume.id is not None:
           raise HTTPException(status_code=400, detail="Resume id exist, upload failed.")
     else: 
         resume.id = 0
-    
+        
     if ' ' not in resume.name:
         raise HTTPException(status_code=400, detail="Name is not <first>space<last> format.")
-    resume.firstname, resume.lastname = resume.name.split(' ')        
+    
+    splitname = resume.name.split(' ')
+    if len(splitname) > 2:
+        raise HTTPException(status_code=400, detail="Name is not <first>space<last> format.")
+
+    resume.firstname, resume.lastname = splitname[0], splitname[1]
+    if (not resume.firstname.isalnum()) or (not resume.lastname.isalnum()):
+        raise HTTPException(status_code=400, detail="First name and last name must be alpha numeric chars only.")
+
     db_resume = crud.upload_resume(db, resume)
     
     return schemas.ResumeID(id = db_resume.id) 
@@ -65,9 +74,16 @@ def get_resume_by_name(name: str, db: Session = Depends(get_db)):
     
     q_name = name
     if '+' not in name: 
-       raise HTTPException(status_code=404, detail="Query resume name must be <first_name>+<last_name>")
+       raise HTTPException(status_code=400, detail="Query resume name must be <first_name>+<last_name>")
 
-    first_name,last_name = name.split("+")    
+    splitname = name.split("+")
+    if len(splitname) > 2:
+        raise HTTPException(status_code=400, detail="Query name must be <first_name>+<last_name> format.")
+
+    first_name,last_name = splitname[0], splitname[1]
+    if (not first_name.isalnum()) or (not last_name.isalnum()):
+        raise HTTPException(status_code=400, detail="First name and last name must be alpha numeric chars only.")
+    
     q_name = (first_name + " " + last_name).strip()
     
     db_resume = crud.get_resume_by_name(db, name = q_name)
@@ -78,6 +94,6 @@ def get_resume_by_name(name: str, db: Session = Depends(get_db)):
         res.extend(crud.get_resumes_by_firstname(db, firstname = first_name))
         res.extend(crud.get_resumes_by_lastname(db, lastname = last_name))        
     else: 
-        return res.append(db_resume)
+        res.append(db_resume)
 
     return res
