@@ -105,7 +105,7 @@ Note: the Postgresql docker is required to start the service. The web service, c
 
   - To test the web app without building docker image, all the following packets should be installed 
    ```
-   $ cd sql_app/
+   $ cd webservice_app/
    $ pip install "fastapi[all]"
    $ pip install "uvicorn[standard]"
    $ pip install SQLAlchemy
