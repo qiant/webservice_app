@@ -82,7 +82,7 @@ Note: the Postgresql docker is required to start the service. The web service, c
    ```
 
 
-## 6. The source code and configure files of the web service app are included in github repo and fastapi_resume_service_app.tar.gz file.
+## 6. The source code and configure files of the web service app are
 ```   
 ── webservice_app
     ├── __init__.py
@@ -113,3 +113,54 @@ Note: the Postgresql docker is required to start the service. The web service, c
    $ uvicorn main:app --port 8080 --reload
    ```
 
+## 7. Use Redis for cache
+   ```
+   $ pip install redis
+   ```
+
+   Redis: Remote Dictionary Service
+   https://realpython.com/python-redis/
+  -  install redis
+   ```
+   $ redisurl="http://download.redis.io/redis-stable.tar.gz"
+   $ curl -s -o redis-stable.tar.gz $redisurl
+   $ sudo su root
+   $ mkdir -p /usr/local/lib/
+   $ chmod a+w /usr/local/lib/
+   $ tar -C /usr/local/lib/ -xzf redis-stable.tar.gz
+   $ rm redis-stable.tar.gz
+   $ cd /usr/local/lib/redis-stable/
+   $ make && make install
+   ```
+
+  - configure redis
+   ```
+   $ sudo su root
+   $ mkdir -p /etc/redis/
+   $ touch /etc/redis/6379.conf
+   $ sudo vi /etc/redis/6379.conf
+   ```
+  
+   ```
+   # /etc/redis/6379.conf
+
+   port              6379
+   daemonize         yes
+   save              60 1
+   bind              127.0.0.1
+   tcp-keepalive     300
+   dbfilename        dump.rdb
+   dir               ./
+   rdbcompression    yes
+   ```
+  - start redis server
+
+   $ redis-server /etc/redis/6379.conf
+
+  - Install redis-py
+
+   ```
+   $ python -m venv .venv
+   $ source .venv/bin/activate
+   $ pip install redis
+   ```
