@@ -155,8 +155,10 @@ Note: the Postgresql docker is required to start the service. The web service, c
    ```
   - start redis server
 
+   ```
    $ redis-server /etc/redis/6379.conf
-
+   ```
+   
   - Install redis-py
 
    ```
