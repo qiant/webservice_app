@@ -22,3 +22,14 @@ class Resume(ResumeBase):
 
 class ResumeID(BaseModel):
     id: int
+
+
+class User(BaseModel):
+    username: str
+    email: str = Field(None)
+    full_name: str = Field(None)
+    disabled: bool = Field(None)
+
+
+class UserInDB(User):
+    hashed_password: str

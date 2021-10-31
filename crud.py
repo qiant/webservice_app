@@ -47,3 +47,18 @@ def upload_resume(db: Session, resume: schemas.ResumeCreate):
     db.refresh(db_resume)
 
     return db_resume
+
+def add_user(db: Session, user: schemas.UserInDB):
+    db_user = models.User(username = user.username, hashed_password = user.hashed_password)
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    
+    return db_user.username
+    
+
+def get_user(db: Session, name: str):
+    """Query users table"""
+
+    res = db.query(models.User).filter(models.User.username == name).first()
+    return res

@@ -11,4 +11,13 @@ class Resume(Base):
     lastname = Column(String)
     title = Column(String)
     description = Column(String)
-    company = Column(String)    
+    company = Column(String)
+
+
+class User(Base):
+    __tablename__ = "users"
+    username = Column(String, primary_key=True, index=True)
+    email = Column(String)
+    full_name = Column(String)
+    disabled = Column(Boolean)
+    hashed_password = Column(String)  
