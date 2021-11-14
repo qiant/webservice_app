@@ -1,0 +1,12 @@
+version: "3.3"
+
+services:
+  rabbit:
+    image: rabbitmq:latest
+    ports:
+      - 5672:5672
+      - 15672:15672
+
+  worker:
+    image: celery_simplest
+    entrypoint: celery worker --app=tasks.celery_app -c 2 --loglevel=info

@@ -7,14 +7,15 @@ from sqlalchemy.orm import Session
 
 import crud, models, schemas
 from database import SessionLocal, engine
+from tasks import show_resume
 
-import redis
+#import redis
 
 models.Base.metadata.create_all(bind=engine)
 
 
 app = FastAPI()
-redisClient = redis.StrictRedis(host="localhost", port=6379, db=0)  #default localhost:6379, need to add password
+#redisClient = redis.StrictRedis(host="localhost", port=6379, db=0)  #default localhost:6379, need to add password
 
 #Dependency
 def get_db():
@@ -51,7 +52,7 @@ def upload_resume_details(resume: schemas.ResumeCreate, db: Session = Depends(ge
         raise HTTPException(status_code=400, detail="First name and last name must be alpha numeric chars only.")
 
     db_resume = crud.upload_resume(db, resume)
-    
+    show_resume.delay(db_resume.id) # trigger worker    
     return schemas.ResumeID(id = db_resume.id) 
 
 
@@ -62,22 +63,22 @@ def get_resume_by_id(resume_id: int, db: Session = Depends(get_db)):
    
     db_resume = models.Resume() 
     id_str = str(resume_id) 
-    if redisClient.exists(id_str):
-        db_resume.id = resume_id
-        db_resume.name = str(redisClient.hget(id_str, "name").decode("utf-8"))
-        db_resume.title = str(redisClient.hget(id_str, "title").decode("utf-8"))
-        db_resume.description = str(redisClient.hget(id_str, "description").decode("utf-8"))
-        db_resume.company = str(redisClient.hget(id_str, "company").decode("utf-8"))
-    else:
-        db_resume = crud.get_resume_by_id(db, id = resume_id)
-        if db_resume.id is None:
-            return HTTPException(status_code=404, detail="Resume Id not found")
+#    if redisClient.exists(id_str):
+#        db_resume.id = resume_id
+#        db_resume.name = str(redisClient.hget(id_str, "name").decode("utf-8"))
+#        db_resume.title = str(redisClient.hget(id_str, "title").decode("utf-8"))
+#        db_resume.description = str(redisClient.hget(id_str, "description").decode("utf-8"))
+#        db_resume.company = str(redisClient.hget(id_str, "company").decode("utf-8"))
+#    else:
+    db_resume = crud.get_resume_by_id(db, id = resume_id)
+    if db_resume.id is None:
+       return HTTPException(status_code=404, detail="Resume Id not found")
         
-        redisClient.hset(id_str, "id", db_resume.id)
-        redisClient.hset(id_str, "name", db_resume.name)
-        redisClient.hset(id_str, "title", db_resume.title)
-        redisClient.hset(id_str, "description", db_resume.description) 
-        redisClient.hset(id_str, "company", db_resume.company)   
+#        redisClient.hset(id_str, "id", db_resume.id)
+#        redisClient.hset(id_str, "name", db_resume.name)
+#        redisClient.hset(id_str, "title", db_resume.title)
+#        redisClient.hset(id_str, "description", db_resume.description) 
+#        redisClient.hset(id_str, "company", db_resume.company)   
         
     return db_resume
 
