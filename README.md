@@ -166,3 +166,11 @@ Note: the Postgresql docker is required to start the service. The web service, c
    $ source .venv/bin/activate
    $ pip install redis
    ```
+
+
+## 8. Test RabbitMQ and Celery worker
+  Start RabbitMQ and worker using docker-compose
+  ```
+   $ docker-compose up
+  ```
+  
