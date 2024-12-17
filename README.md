@@ -1,4 +1,4 @@
-# webservice_app Readme
+# webservice app Readme
 A simple Web Service to support upload and query resumes information of candidates using FastAPI, postgres db, and sqlalchemy.orm.
 
 Use docker container postgres. 
